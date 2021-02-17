@@ -32,3 +32,9 @@ img
     min-width: 300px;
     height: auto;
 }
+
+@media (max-width: 640px) {
+  .center {
+    width: 50%;
+  }
+}
