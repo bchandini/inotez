@@ -119,8 +119,14 @@ app.get("/notes", function(req, res){
 });
 
 app.get("/submit", function(req, res){
-  res.render("submit");
+  if(req.isAuthenticated()){
+    res.render("submit");
+    }else{
+      res.redirect("/");
+    }
+  
 });
+
 
 app.get("/logout", function(req, res){
   req.logout();
@@ -164,28 +170,37 @@ app.get("/post", function(req, res){
       });
 
 
-      console.log("userdate "+userdate+"userpost "+userpost)+"postid"+userpostid;      
-      res.render("post", {  
-        userpost: userpost,
-        userdate: userdate,
-        userpostid: userpostid
-     });
+      console.log("userdate "+userdate+"userpost "+userpost)+"postid"+userpostid;  
+      
+      if(req.isAuthenticated()){
+        res.render("post", {  
+          userpost: userpost,
+          userdate: userdate,
+          userpostid: userpostid
+       });
+        }else{
+          res.redirect("/");
+        }
+     
+      
     }
   });
 
 });
 
 app.get("/posts/:postId", function(req, res){
-
   const requestedPostId = req.params.postId;
-  
+  if(req.isAuthenticated()){      
     Post.findOne({_id: requestedPostId}, function(err, post){
       res.render("newpost", {
         title: post.date,
         content: post.content
       });
-    });
-  
+    })
+    }
+    else{
+      res.redirect("/");
+    }  
   });
 
 /*
