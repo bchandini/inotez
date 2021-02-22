@@ -292,9 +292,8 @@ app.post("/submit", function(req, res){
  newPost.save(function(err){
      if(err){
          console.log(err);
-         res.render("notes");
      }else{
-         res.render("post");
+         res.render("notes");
     }
  })
 })
