@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 let usercred = "";
+let userfullname = "";
 
 app.use(session({
   secret: process.env.SECRET,
@@ -46,6 +47,9 @@ const secretSchema = new mongoose.Schema({
 
 const secret = process.env.SECRET;
 
+const callbackurl="https://agile-taiga-93732.herokuapp.com";
+//const callbackurl= "http://localhost:3000";
+
 //userSchema.plugin(encrypt, { secret: secret, encryptedFields: ["password"] });
 
 userSchema.plugin(passportLocalMongoose);
@@ -68,12 +72,13 @@ passport.deserializeUser(function(id, done) {
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "https://agile-taiga-93732.herokuapp.com/auth/google/notes",
+  callbackURL: callbackurl+"/auth/google/notes",
   userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
 },
 function(accessToken, refreshToken, profile, cb) {
-   usercred = profile.emails[0].value;   
-   User.findOrCreate({ email: profile.emails[0].value, username: profile.id }, function (err, user) {
+   usercred = profile.emails[0].value; 
+   userfullname = profile.displayName;
+  User.findOrCreate({ email: profile.emails[0].value, username: profile.id }, function (err, user) {
         return cb(err, user);
     });    
  }
@@ -90,7 +95,7 @@ app.get('/auth/google',
   "https://www.googleapis.com/auth/userinfo.profile",
   "https://www.googleapis.com/auth/userinfo.email"] }),
   function(accessToken, refreshToken, profile, done) {
-    console.log(profile.emails[0].value);
+    //console.log(profile);
   }); 
   
   app.get('/auth/google/notes', 
@@ -112,7 +117,9 @@ app.get("/register", function(req, res){
 */
 app.get("/notes", function(req, res){
   if(req.isAuthenticated()){
-  res.render("notes");
+  res.render("notes",{
+    userfullname: userfullname
+   });
   }else{
     res.redirect("/");
   }
@@ -170,7 +177,7 @@ app.get("/post", function(req, res){
       });
 
 
-      console.log("userdate "+userdate+"userpost "+userpost)+"postid"+userpostid;  
+      //console.log("userdate "+userdate+"userpost "+userpost)+"postid"+userpostid;  
       
       if(req.isAuthenticated()){
         res.render("post", {  
@@ -293,7 +300,9 @@ app.post("/submit", function(req, res){
      if(err){
          console.log(err);
      }else{
-         res.render("notes");
+         res.render("notes",{
+          userfullname: userfullname
+         });
     }
  })
 })
