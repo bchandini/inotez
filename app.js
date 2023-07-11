@@ -95,8 +95,6 @@ app.get('/auth/google',
   "https://www.googleapis.com/auth/userinfo.profile",
   "https://www.googleapis.com/auth/userinfo.email"] }),
   function(accessToken, refreshToken, profile, done) {
-    //console.log(profile);
-  }); 
   
   app.get('/auth/google/notes', 
   passport.authenticate('google', { failureRedirect: '/' }),
